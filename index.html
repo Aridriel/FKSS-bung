@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fachkraft für Schutz und Sicherheit - Lernportal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 min-h-screen">
+    <div class="container mx-auto p-4 max-w-6xl">
+        
+        <!-- Header -->
+        <header class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">Lernportal</h1>
+                        <p class="text-gray-600">Fachkraft für Schutz und Sicherheit</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-600">Punkte</div>
+                    <div class="text-3xl font-bold text-blue-600" id="totalScore">0</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-white rounded-lg shadow-lg p-2 mb-6 flex gap-2">
+            <button onclick="showSection('quiz')" id="nav-quiz" class="flex-1 px-4 py-3 rounded-lg font-semibold transition-colors bg-blue-600 text-white">
+                🎯 Quiz
+            </button>
+            <button onclick="showSection('lernkarten')" id="nav-lernkarten" class="flex-1 px-4 py-3 rounded-lg font-semibold transition-colors hover:bg-gray-100">
+                📇 Lernkarten
+            </button>
+            <button onclick="showSection('uebungen')" id="nav-uebungen" class="flex-1 px-4 py-3 rounded-lg font-semibold transition-colors hover:bg-gray-100">
+                ✍️ Übungen
+            </button>
+        </nav>
+
+        <!-- Quiz Section -->
+        <div id="section-quiz" class="section-content">
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="text-sm text-gray-600">Richtig</div>
+                    <div class="text-2xl font-bold text-green-600" id="correct">0</div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="text-sm text-gray-600">Falsch</div>
+                    <div class="text-2xl font-bold text-red-600" id="incorrect">0</div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="text-sm text-gray-600">Fortschritt</div>
+                    <div class="text-2xl font-bold text-blue-600" id="progress">0/20</div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="mb-4">
+                    <span class="text-sm font-semibold text-blue-600" id="quizCategory"></span>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800 mb-6" id="quizQuestion"></h2>
+                <div class="space-y-3" id="quizAnswers"></div>
+                <div id="quizFeedback" class="mt-6 p-4 rounded-lg hidden"></div>
+                <button onclick="nextQuestion()" id="nextBtn" class="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 hidden">
+                    Nächste Frage →
+                </button>
+            </div>
+        </div>
+
+        <!-- Lernkarten Section -->
+        <div id="section-lernkarten" class="section-content hidden">
+            <div class="mb-6 flex gap-3 flex-wrap">
+                <button onclick="filterCards('alle')" class="filter-btn active px-4 py-2 rounded-lg font-medium">Alle</button>
+                <button onclick="filterCards('recht')" class="filter-btn px-4 py-2 rounded-lg font-medium">Recht</button>
+                <button onclick="filterCards('technik')" class="filter-btn px-4 py-2 rounded-lg font-medium">Technik</button>
+                <button onclick="filterCards('praxis')" class="filter-btn px-4 py-2 rounded-lg font-medium">Praxis</button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-8" id="flashcardContainer">
+                <div class="text-center">
+                    <div class="text-sm font-semibold text-blue-600 mb-4" id="cardCategory"></div>
+                    <div class="min-h-[200px] flex items-center justify-center cursor-pointer" onclick="flipCard()" id="cardContent">
+                        <p class="text-xl font-bold text-gray-800" id="cardFront"></p>
+                    </div>
+                    <div class="text-sm text-gray-500 mt-4">Klicke zum Umdrehen</div>
+                    <div class="flex gap-3 justify-center mt-6">
+                        <button onclick="prevCard()" class="px-6 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">← Zurück</button>
+                        <button onclick="nextCard()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Weiter →</button>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-4" id="cardCounter"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Übungen Section -->
+        <div id="section-uebungen" class="section-content hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">🔢 Kostenrechnung</h3>
+                    <p class="text-sm text-gray-600 mb-4">Berechne den Verkaufspreis für einen Sicherheitsauftrag</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Personalkosten (€)</label>
+                            <input type="number" id="ex1-pk" value="3000" class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Sozialkosten (%)</label>
+                            <input type="number" id="ex1-sk" value="20" class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Materialkosten (€)</label>
+                            <input type="number" id="ex1-mat" value="200" class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Gewinnzuschlag (%)</label>
+                            <input type="number" id="ex1-gew" value="15" class="w-full p-2 border rounded">
+                        </div>
+                        <button onclick="checkExercise1()" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Lösung prüfen
+                        </button>
+                        <div id="ex1-result" class="hidden p-3 rounded-lg"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">⚖️ Rechtsfälle</h3>
+                    <div class="mb-4">
+                        <p class="text-sm font-semibold mb-2">Fall 1: Ladendiebstahl</p>
+                        <p class="text-sm text-gray-700 mb-3">Ein Sicherheitsmitarbeiter beobachtet einen Kunden, der Ware einsteckt und den Kassenbereich passiert. Welche Handlung ist rechtlich korrekt?</p>
+                        <div class="space-y-2">
+                            <button onclick="checkCase(1, false)" class="w-full text-left p-3 border rounded hover:bg-gray-50">
+                                A) Sofort festnehmen und durchsuchen
+                            </button>
+                            <button onclick="checkCase(1, true)" class="w-full text-left p-3 border rounded hover:bg-gray-50">
+                                B) Auf frischer Tat ansprechen und Polizei rufen
+                            </button>
+                            <button onclick="checkCase(1, false)" class="w-full text-left p-3 border rounded hover:bg-gray-50">
+                                C) Die Ware zurückfordern und gehen lassen
+                            </button>
+                        </div>
+                        <div id="case1-result" class="hidden mt-3 p-3 rounded-lg"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">🚨 Notfall-Szenario</h3>
+                    <p class="text-sm text-gray-700 mb-3">Du bist als Sicherheitskraft bei einem Event. Plötzlich bricht Panik aus und Menschen drängen zum Ausgang.</p>
+                    <p class="text-sm font-semibold mb-2">In welcher Reihenfolge handelst du?</p>
+                    <div class="space-y-2 mb-3" id="scenario-items">
+                        <div draggable="true" class="p-3 bg-gray-100 rounded cursor-move border-2 border-gray-300" data-order="3">
+                            📞 Rettungsdienste informieren
+                        </div>
+                        <div draggable="true" class="p-3 bg-gray-100 rounded cursor-move border-2 border-gray-300" data-order="1">
+                            🔊 Ruhe bewahren und laut beruhigen
+                        </div>
+                        <div draggable="true" class="p-3 bg-gray-100 rounded cursor-move border-2 border-gray-300" data-order="2">
+                            👥 Personenströme lenken
+                        </div>
+                        <div draggable="true" class="p-3 bg-gray-100 rounded cursor-move border-2 border-gray-300" data-order="4">
+                            📋 Vorfall dokumentieren
+                        </div>
+                    </div>
+                    <button onclick="checkScenario()" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Reihenfolge prüfen
+                    </button>
+                    <div id="scenario-result" class="hidden mt-3 p-3 rounded-lg"></div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">📝 Lückentext</h3>
+                    <p class="text-sm text-gray-700 mb-4">Fülle die Lücken mit den richtigen Begriffen:</p>
+                    <p class="text-sm leading-relaxed">
+                        Das Jedermannsrecht nach § <input type="text" id="gap1" class="w-16 px-2 py-1 border rounded" placeholder="..."> StPO erlaubt es, eine Person bei 
+                        <input type="text" id="gap2" class="w-32 px-2 py-1 border rounded" placeholder="..."> vorläufig festzuhalten. 
+                        Bei der Durchsuchung einer Person muss das Prinzip der <input type="text" id="gap3" class="w-32 px-2 py-1 border rounded" placeholder="..."> 
+                        beachtet werden. Die Polizei muss <input type="text" id="gap4" class="w-32 px-2 py-1 border rounded" placeholder="..."> informiert werden.
+                    </p>
+                    <button onclick="checkGaps()" class="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Prüfen
+                    </button>
+                    <div id="gaps-result" class="hidden mt-3 p-3 rounded-lg"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Quiz Daten
+        const quizData = [
+            {cat: "LF 4: Recht", q: "Was regelt §127 StPO?", a: ["Vorläufige Festnahme (Jedermannsrecht)", "Durchsuchung von Personen", "Beschlagnahme von Gegenständen", "Vernehmung von Zeugen"], correct: 0},
+            {cat: "LF 4: Recht", q: "Welche Voraussetzungen müssen für eine Notwehr nach §32 StGB erfüllt sein?", a: ["Gegenwärtiger, rechtswidriger Angriff", "Vorsätzliche Handlung", "Polizeiliche Anordnung", "Schriftliche Genehmigung"], correct: 0},
+            {cat: "LF 3: Technik", q: "Was ist der Hauptzweck einer Einbruchmeldeanlage (EMA)?", a: ["Unbefugtes Eindringen erkennen und melden", "Feuer löschen", "Türen verriegeln", "Videoaufnahmen speichern"], correct: 0},
+            {cat: "LF 6: Deeskalation", q: "Was ist die erste Maßnahme bei einem Konflikt?", a: ["Ruhe bewahren und Situation einschätzen", "Sofort eingreifen", "Polizei rufen", "Laute Ansprache"], correct: 0},
+            {cat: "LF 12: Kostenrechnung", q: "Was sind Fixkosten?", a: ["Kosten, die unabhängig von der Produktionsmenge anfallen", "Kosten, die mit der Menge steigen", "Nur Personalkosten", "Nur Materialkosten"], correct: 0},
+            {cat: "LF 5: Objektschutz", q: "Was gehört NICHT zu den Aufgaben im Objektschutz?", a: ["Strafverfolgung", "Kontrollgänge", "Zutrittskontrolle", "Alarmverfolgung"], correct: 0},
+            {cat: "LF 7: Dokumentation", q: "Was muss ein Einsatzbericht enthalten?", a: ["Datum, Uhrzeit, Sachverhalt, Maßnahmen", "Nur das Datum", "Nur die beteiligten Personen", "Persönliche Meinung"], correct: 0},
+            {cat: "LF 9: Veranstaltungen", q: "Was bedeutet Crowd-Management?", a: ["Steuerung von Personenströmen", "Ticketkontrolle", "Parkplatzorganisation", "Catering-Service"], correct: 0},
+            {cat: "LF 11: Notfall", q: "Was ist die erste Maßnahme bei einem Herzstillstand?", a: ["Herzdruckmassage beginnen", "Warten auf Rettungsdienst", "Person aufsetzen", "Wasser geben"], correct: 0},
+            {cat: "LF 4: Recht", q: "Was ist das Hausrecht?", a: ["Befugnis des Eigentümers, über sein Grundstück zu bestimmen", "Recht, Häuser zu bauen", "Polizeiliche Befugnis", "Mietrecht"], correct: 0},
+            {cat: "LF 3: Technik", q: "Wofür steht VdS?", a: ["Verband der Sachversicherer", "Verein deutscher Sicherheit", "Video-Dokumentations-System", "Vertrag der Schutzdienste"], correct: 0},
+            {cat: "LF 6: Deeskalation", q: "Welche Körperhaltung wirkt deeskalierend?", a: ["Offen, nicht bedrohlich, Augenhöhe", "Verschränkte Arme", "Direkt vortreten", "Von oben herab"], correct: 0},
+            {cat: "LF 12: Kostenrechnung", q: "Was ist der Deckungsbeitrag?", a: ["Umsatz minus variable Kosten", "Umsatz minus Fixkosten", "Gewinn plus Kosten", "Nur der Gewinn"], correct: 0},
+            {cat: "LF 5: Objektschutz", q: "Was ist eine Gefährdungsbeurteilung?", a: ["Systematische Ermittlung möglicher Gefahren", "Liste der Mitarbeiter", "Kostenrechnung", "Dienstplan"], correct: 0},
+            {cat: "LF 9: Veranstaltungen", q: "Was regelt die Versammlungsstättenverordnung?", a: ["Sicherheitsanforderungen für Veranstaltungsorte", "Ticketpreise", "Alkoholausschank", "Lärmschutz"], correct: 0},
+            {cat: "LF 7: Dokumentation", q: "Was ist bei Personenbeschreibungen wichtig?", a: ["Objektiv, präzise, ohne Wertung", "Persönliche Meinung", "Nur Kleidung", "Vermutungen"], correct: 0},
+            {cat: "LF 11: Notfall", q: "Was bedeutet die Abkürzung AED?", a: ["Automatisierter Externer Defibrillator", "Allgemeiner Erste-Hilfe Dienst", "Alarm-Einsatz-Dienst", "Atemwegs-Equipment-Diagnose"], correct: 0},
+            {cat: "LF 4: Recht", q: "Was ist der Unterschied zwischen Notwehr und Nothilfe?", a: ["Notwehr = eigene Verteidigung, Nothilfe = Verteidigung anderer", "Kein Unterschied", "Nothilfe nur durch Polizei", "Notwehr ist strafbar"], correct: 0},
+            {cat: "LF 13: Personal", q: "Was ist situativer Führungsstil?", a: ["Anpassung des Führungsverhaltens an die Situation", "Nur autoritäre Führung", "Keine Führung", "Immer demokratisch"], correct: 0},
+            {cat: "LF 10: Transport", q: "Was ist bei Werttransporten besonders wichtig?", a: ["Diskretion und Sicherheitskonzept", "Schnelligkeit", "Große Fahrzeuge", "Viele Mitarbeiter"], correct: 0}
+        ];
+
+        // Lernkarten Daten
+        const flashcards = [
+            {cat: "recht", front: "§127 StPO", back: "Jedermannsrecht - Vorläufige Festnahme bei Fluchtgefahr oder unbekannter Identität"},
+            {cat: "recht", front: "§32 StGB", back: "Notwehr - Verteidigung gegen gegenwärtigen rechtswidrigen Angriff (erforderlich + geboten)"},
+            {cat: "recht", front: "§34 StGB", back: "Rechtfertigender Notstand - Schaden abwenden, wenn Gefahr nicht anders abwendbar"},
+            {cat: "recht", front: "DSGVO Art. 6", back: "Rechtmäßigkeit der Verarbeitung personenbezogener Daten (Einwilligung, Vertrag, etc.)"},
+            {cat: "technik", front: "EMA", back: "Einbruchmeldeanlage - Erkennt und meldet unbefugtes Eindringen"},
+            {cat: "technik", front: "BMA", back: "Brandmeldeanlage - Erkennt Feuer/Rauch und löst Alarm aus"},
+            {cat: "technik", front: "ZKA", back: "Zutrittskontrollanlage - Regelt und überwacht Zutritt zu Bereichen"},
+            {cat: "technik", front: "VdS", back: "Verband der Sachversicherer - Prüforganisation für Sicherheitstechnik"},
+            {cat: "praxis", front: "Deeskalation", back: "Methoden zur Konfliktentschärfung: Ruhe, Empathie, klare Kommunikation, Distanz"},
+            {cat: "praxis", front: "5W-Regel (Notruf)", back: "Wo? Was? Wie viele? Welche Verletzungen? Warten auf Rückfragen"},
+            {cat: "praxis", front: "Crowd-Management", back: "Steuerung von Menschenmengen durch Leitsysteme, Personal, Kommunikation"},
+            {cat: "praxis", front: "4-Augen-Prinzip", back: "Sicherheitsmaßnahme: Wichtige Tätigkeiten nur mit 2 Personen (z.B. Werttransport)"},
+            {cat: "recht", front: "Gewaltmonopol", back: "Nur der Staat darf legitim Gewalt anwenden (Polizei, Justiz)"},
+            {cat: "praxis", front: "Eigensicherung", back: "Erste Priorität: Eigene Sicherheit vor Hilfeleistung"},
+            {cat: "technik", front: "Widerstandsklassen", back: "RC 1-6: Normung für Einbruchschutz (höher = besser)"},
+            {cat: "praxis", front: "Dokumentationspflicht", back: "Alle Vorfälle, Maßnahmen und Beobachtungen schriftlich festhalten"}
+        ];
+
+        // State
+        let currentQuiz = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let totalScore = 0;
+        let answered = false;
+        let currentCard = 0;
+        let cardFlipped = false;
+        let filteredCards = flashcards;
+
+        // Navigation
+        function showSection(section) {
+            document.querySelectorAll('.section-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('hover:bg-gray-100');
+            });
+            document.getElementById('section-' + section).classList.remove('hidden');
+            document.getElementById('nav-' + section).classList.add('bg-blue-600', 'text-white');
+            document.getElementById('nav-' + section).classList.remove('hover:bg-gray-100');
+            
+            if(section === 'lernkarten') loadCard();
+        }
+
+        // Quiz
+        function loadQuiz() {
+            if(currentQuiz >= quizData.length) {
+                currentQuiz = 0;
+                correctCount = 0;
+                incorrectCount = 0;
+            }
+            
+            const quiz = quizData[currentQuiz];
+            document.getElementById('quizCategory').textContent = quiz.cat;
+            document.getElementById('quizQuestion').textContent = quiz.q;
+            document.getElementById('progress').textContent = `${currentQuiz + 1}/${quizData.length}`;
+            
+            const container = document.getElementById('quizAnswers');
+            container.innerHTML = '';
+            quiz.a.forEach((answer, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 border-2 rounded-lg hover:bg-gray-50 transition-colors';
+                btn.textContent = answer;
+                btn.onclick = () => checkAnswer(idx);
+                container.appendChild(btn);
+            });
+            
+            document.getElementById('quizFeedback').classList.add('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+            answered = false;
+        }
+
+        function checkAnswer(selected) {
+            if(answered) return;
+            answered = true;
+            
+            const quiz = quizData[currentQuiz];
+            const buttons = document.querySelectorAll('#quizAnswers button');
+            const feedback = document.getElementById('quizFeedback');
+            
+            if(selected === quiz.correct) {
+                buttons[selected].classList.add('bg-green-100', 'border-green-500');
+                feedback.className = 'mt-6 p-4 rounded-lg bg-green-50 border border-green-200';
+                feedback.innerHTML = '<p class="font-semibold text-green-800">✅ Richtig!</p>';
+                correctCount++;
+                totalScore += 10;
+            } else {
+                buttons[selected].classList.add('bg-red-100', 'border-red-500');
+                buttons[quiz.correct].classList.add('bg-green-100', 'border-green-500');
+                feedback.className = 'mt-6 p-4 rounded-lg bg-red-50 border border-red-200';
+                feedback.innerHTML = '<p class="font-semibold text-red-800">❌ Leider falsch. Die richtige Antwort ist markiert.</p>';
+                incorrectCount++;
+            }
+            
+            feedback.classList.remove('hidden');
+            document.getElementById('nextBtn').classList.remove('hidden');
+            document.getElementById('correct').textContent = correctCount;
+            document.getElementById('incorrect').textContent = incorrectCount;
+            document.getElementById('totalScore').textContent = totalScore;
+        }
+
+        function nextQuestion() {
+            currentQuiz++;
+            if(currentQuiz >= quizData.length) {
+                alert(`Quiz beendet! 🎉\n\nRichtig: ${correctCount}\nFalsch: ${incorrectCount}\nGesamtpunkte: ${totalScore}`);
+            }
+            loadQuiz();
+        }
+
+        // Lernkarten
+        function filterCards(filter) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-200');
+            });
+            event.target.classList.add('active', 'bg-blue-600', 'text-white');
+            event.target.classList.remove('bg-gray-200');
+            
+            filteredCards = filter === 'alle' ? flashcards : flashcards.filter(c => c.cat === filter);
+            currentCard = 0;
+            cardFlipped = false;
+            loadCard();
+        }
+
+        function loadCard() {
+            if(filteredCards.length === 0) return;
+            const card = filteredCards[currentCard];
+            document.getElementById('cardCategory').textContent = card.cat.toUpperCase();
+            document.getElementById('cardFront').textContent = card.front;
+            document.getElementById('cardCounter').textContent = `Karte ${currentCard + 1} von ${filteredCards.length}`;
+            cardFlipped = false;
+            document.getElementById('cardContent').style.transform = '';
+        }
+
+        function flipCard() {
+            const card = filteredCards[currentCard];
+            const content = document.getElementById('cardFront');
+            cardFlipped = !cardFlipped;
+            content.textContent = cardFlipped ? card.back : card.front;
+            document.getElementById('cardContent').style.transform = cardFlipped ? 'rotateY(180deg)' : '';
+        }
+
+        function nextCard() {
+            currentCard = (currentCard + 1) % filteredCards.length;
+            loadCard();
+        }
+
+        function prevCard() {
+            currentCard = currentCard === 0 ? filteredCards.length - 1 : currentCard - 1;
+            loadCard();
+        }
+
+        // Übungen
+        function checkExercise1() {
+            const pk = parseFloat(document.getElementById('ex1-pk').value) || 0;
+            const sk = parseFloat(document.getElementById('ex1-sk').value) || 0;
+            const mat = parseFloat(document.getElementById('ex1-mat').value) || 0;
+            const gew = parseFloat(document.getElementById('ex1-gew').value) || 0;
+            
+            const brutto = pk * (1 + sk/100);
+            const selbst = brutto + mat;
+            const vk = selbst * (1 + gew/100);
+            
+            const result = document.getElementById('ex1-result');
+            result.className = 'p-3 rounded-lg bg
